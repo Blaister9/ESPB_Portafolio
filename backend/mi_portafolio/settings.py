@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'conversaciones',
     'channels',
+    'proyectos'
 ]
 
 ASGI_APPLICATION = 'mi_portafolio.asgi.application'
@@ -66,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = ['http://localhost:3000']
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'mi_portafolio.urls'
 
