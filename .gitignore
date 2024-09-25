@@ -1,0 +1,23 @@
+# Ignorar la carpeta node_modules dentro de frontend
+frontend/node_modules/
+
+# Ignorar archivos temporales de construcción y otros directorios relacionados
+build/
+dist/
+*.log
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+*.venv
+*.env/
+*.venv/
+*.myvenv/
+.Python
+.envrc
+
+# Django migration files
+*/migrations/*
