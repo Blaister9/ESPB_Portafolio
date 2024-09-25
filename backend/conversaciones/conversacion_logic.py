@@ -1,22 +1,15 @@
 # conversaciones/conversacion_logic.py
-import threading
 from .conversaciones import generar_respuesta_ia1, generar_respuesta_ia2  # Importamos las funciones desde conversaciones.py
+import json
 
-# Estado global para controlar las conversaciones y el campo de usuario (temporal)
+
 conversacion = []
-tema_inicial = None
-turnos_maximos = 5
-turno_actual = 0
 chat_bloqueado = False
 
 # Función para manejar el flujo de la conversación
-def manejar_conversacion(tema):
-    global conversacion, turno_actual, chat_bloqueado
-
-    # Reiniciar el estado de la conversación y variables
+async def manejar_conversacion(tema, consumer):
     turno_actual = 0
-    chat_bloqueado = False
-    conversacion.clear()
+    turnos_maximos = 2
 
     # Crear historial de conversación acumulado para IA1
     historial_conversacion_ia1 = [
@@ -25,9 +18,9 @@ def manejar_conversacion(tema):
     ]
 
     # IA1 inicia la conversación respondiendo al tema inicial
-    respuesta_ia1 = generar_respuesta_ia1(historial_conversacion_ia1)
-    conversacion.append({'autor': 'IA1', 'mensaje': respuesta_ia1})
-    
+    respuesta_ia1 = await generar_respuesta_ia1(historial_conversacion_ia1)  # Llamada asíncrona
+    await consumer.send(text_data=json.dumps({'autor': 'IA1', 'mensaje': respuesta_ia1}))  # Enviar al cliente inmediatamente
+
     # Crear historial de conversación acumulado para IA2, respondiendo a IA1
     historial_conversacion_ia2 = [
         {'role': 'system', 'content': "Eres IA2, un físico espacial que investiga el impacto de la actividad solar en el campo magnético terrestre. Debes criticar las simplificaciones de IA1 y asegurarte de que las explicaciones sean lo suficientemente técnicas, sin perder precisión."},
@@ -37,23 +30,24 @@ def manejar_conversacion(tema):
     # Iniciar el ciclo de la conversación
     while turno_actual < turnos_maximos:
         # IA2 responde a IA1
-        respuesta_ia2 = generar_respuesta_ia2(historial_conversacion_ia2)
-        conversacion.append({'autor': 'IA2', 'mensaje': respuesta_ia2})
+        respuesta_ia2 = await generar_respuesta_ia2(historial_conversacion_ia2)  # Llamada asíncrona
+        await consumer.send(text_data=json.dumps({'autor': 'IA2', 'mensaje': respuesta_ia2}))  # Enviar al cliente inmediatamente
 
         # Añadir la respuesta de IA2 al historial de IA1 como 'user'
         historial_conversacion_ia1.append({'role': 'user', 'content': respuesta_ia2})
 
         # IA1 responde a IA2
-        respuesta_ia1 = generar_respuesta_ia1(historial_conversacion_ia1)
-        conversacion.append({'autor': 'IA1', 'mensaje': respuesta_ia1})
+        respuesta_ia1 = await generar_respuesta_ia1(historial_conversacion_ia1)  # Llamada asíncrona
+        await consumer.send(text_data=json.dumps({'autor': 'IA1', 'mensaje': respuesta_ia1}))  # Enviar al cliente inmediatamente
 
         # Añadir la respuesta de IA1 al historial de IA2 como 'user'
         historial_conversacion_ia2.append({'role': 'user', 'content': respuesta_ia1})
 
         turno_actual += 1
 
-    chat_bloqueado = True
 
-# Función para obtener el estado actual de la conversación
 def obtener_estado_conversacion():
     return {'conversacion': conversacion, 'chat_bloqueado': chat_bloqueado}
+
+
+    
