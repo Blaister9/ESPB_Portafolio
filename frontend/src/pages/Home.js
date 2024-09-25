@@ -1,6 +1,7 @@
 // src/pages/Home.js
 import React from 'react';
 import { motion } from 'framer-motion';
+import Button from '../components/Button';
 
 const Home = () => {
   return (
@@ -32,12 +33,7 @@ const Home = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 1.0 }}
       >
-        <a
-          href="/projects"
-          className="bg-blue-500 hover:bg-blue-700 text-white dark:bg-gray-700 dark:hover:bg-gray-600 font-bold py-2 px-4 rounded"
-        >
-          Ver Proyectos
-        </a>
+        <Button href="/projects" label="Ver Proyectos" />
       </motion.div>
     </motion.div>
   );

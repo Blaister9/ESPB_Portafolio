@@ -1,14 +1,33 @@
 // src/pages/Contact.js
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const Contact = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [formStatus, setFormStatus] = useState(''); // Nueva variable para manejar el estado del formulario
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validación simple
+    if (!nombre || !email || !mensaje) {
+      setFormStatus('Todos los campos son obligatorios');
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setFormStatus('Introduce un correo válido');
+      return;
+    }
+
+    // Simulación de envío del formulario
     console.log("Formulario enviado", { nombre, email, mensaje });
+    setFormStatus('Formulario enviado con éxito');
+    setNombre('');
+    setEmail('');
+    setMensaje('');
   };
 
   return (
@@ -41,10 +60,26 @@ const Contact = () => {
             onChange={(e) => setMensaje(e.target.value)}
           />
         </div>
-        <button className="bg-blue-500 hover:bg-blue-700 text-white dark:bg-gray-700 dark:hover:bg-gray-600 font-bold py-2 px-4 rounded">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-blue-500 hover:bg-blue-700 text-white dark:bg-gray-700 dark:hover:bg-gray-600 font-bold py-2 px-4 rounded"
+        >
           Enviar
-        </button>
+        </motion.button>
       </form>
+      
+      {/* Mensaje de estado del formulario */}
+      {formStatus && (
+        <motion.p
+          className={`mt-4 text-center ${formStatus.includes('éxito') ? 'text-green-500' : 'text-red-500'}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {formStatus}
+        </motion.p>
+      )}
     </div>
   );
 };
