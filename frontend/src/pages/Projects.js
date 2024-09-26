@@ -1,7 +1,8 @@
 // src/pages/Projects.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ProjectCard from '../components/ProjectCard';
 import { obtenerProyectos, crearProyecto, eliminarProyecto } from '../services/api';
+import createWebSocketService from '../services/websocket';
 
 const Projects = () => {
   const [proyectos, setProyectos] = useState([]);
@@ -11,17 +12,65 @@ const Projects = () => {
     tecnologias: '',
     link_repositorio: ''
   });
+  const websocketServiceRef = useRef(null);
 
-  // Obtener los proyectos desde la API
+  const fetchProyectos = async () => {
+    const data = await obtenerProyectos();
+    setProyectos(data);
+  };
+
   useEffect(() => {
-    const fetchProyectos = async () => {
-      const data = await obtenerProyectos();
-      setProyectos(data);
+    const fetchProyectosYConectarWebSocket = async () => {
+      await fetchProyectos();
+
+      if (!websocketServiceRef.current) {
+        websocketServiceRef.current = createWebSocketService(
+          'ws://localhost:8000/ws/proyectos/',
+          (data) => {
+            console.log('Mensaje recibido desde WebSocket en Projects:', data);
+            console.log('Tipo de dato recibido:', typeof data);
+            console.log('Estructura del dato:', JSON.stringify(data, null, 2));
+          
+            if (!data) {
+              console.error('Datos de WebSocket son undefined');
+              return;
+            }
+          
+            switch(data.accion) {
+              case 'create':
+                setProyectos((prevProyectos) => [...prevProyectos, data.data]);
+                break;
+              case 'update':
+                setProyectos((prevProyectos) =>
+                  prevProyectos.map((proyecto) =>
+                    proyecto.id === data.data.id ? data.data : proyecto
+                  )
+                );
+                break;
+              case 'delete':
+                setProyectos((prevProyectos) =>
+                  prevProyectos.filter((proyecto) => proyecto.id !== data.data.id)
+                );
+                break;
+              default:
+                console.log('Acción de WebSocket no reconocida:', data.accion);
+            }
+          }
+        );
+        websocketServiceRef.current.connectWithDelay();
+      }
     };
-    fetchProyectos();
+
+    fetchProyectosYConectarWebSocket();
+
+    return () => {
+      if (websocketServiceRef.current) {
+        websocketServiceRef.current.close();
+        console.log('WebSocket cerrado al desmontar el componente');
+      }
+    };
   }, []);
 
-  // Función para manejar la creación de un nuevo proyecto
   const handleCrearProyecto = async (e) => {
     e.preventDefault();
     const proyectoCreado = await crearProyecto(nuevoProyecto);
@@ -29,7 +78,6 @@ const Projects = () => {
     setNuevoProyecto({ titulo: '', descripcion: '', tecnologias: '', link_repositorio: '' });
   };
 
-  // Función para manejar la eliminación de un proyecto
   const handleEliminar = async (id) => {
     const confirmado = window.confirm('¿Estás seguro de que deseas eliminar este proyecto?');
     if (confirmado) {
@@ -93,10 +141,10 @@ const Projects = () => {
 
       {/* Mostrar proyectos */}
       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {proyectos.map((proyecto,index) => (
+        {proyectos.map((proyecto, index) => (
           <ProjectCard
             key={index}
-            id={proyecto.id} 
+            id={proyecto.id}
             title={proyecto.titulo}
             description={proyecto.descripcion}
             tecnologias={proyecto.tecnologias}

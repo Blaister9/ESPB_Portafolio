@@ -15,11 +15,9 @@ const ChatWebSocket = () => {
       const service = createWebSocketService('ws://localhost:8000/ws/chat/', (mensaje) => {
         setMensajes((prevMensajes) => [...prevMensajes, mensaje]);
       });
-
       service.connectWithDelay(500);
       webSocketServiceRef.current = service;
       hasConnectedRef.current = true;
-
       return () => {
         if (webSocketServiceRef.current) {
           webSocketServiceRef.current.close();
@@ -64,7 +62,7 @@ const ChatWebSocket = () => {
       <button onClick={iniciarConversacionHandler}>Iniciar Conversación</button>
       <div>
         {mensajes.map((msg, index) => (
-          <p key={index}>{msg}</p>
+          <p key={index}>{msg.autor}: {msg.mensaje}</p>
         ))}
       </div>
     </div>

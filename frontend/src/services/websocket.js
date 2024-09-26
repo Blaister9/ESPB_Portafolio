@@ -26,8 +26,15 @@ const createWebSocketService = (url, onMessage) => {
       };
   
       ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        onMessage(data.mensaje);
+        console.log('Mensaje raw recibido:', event.data);
+        try {
+          const data = JSON.parse(event.data);
+          console.log('Mensaje parseado:', data);
+          onMessage(data);
+        } catch (error) {
+          console.error('Error al parsear el mensaje:', error);
+          console.log('Mensaje que causó el error:', event.data);
+        }
       };
   
       ws.onclose = (event) => {
