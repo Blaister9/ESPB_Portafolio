@@ -1,97 +1,74 @@
-// frontend/src/components/chat/ChatWebSocket.js
-import React, { useEffect, useState } from 'react';
+// /home/epaz/Documentos/2_Conversation/frontend/src/components/chat/ChatWebSocket.js
+
+import React, { useEffect, useState, useRef } from 'react';
 import { iniciarConversacion } from '../../services/api';
+import createWebSocketService from '../../services/websocket';
 
 const ChatWebSocket = () => {
-    const [mensajes, setMensajes] = useState([]);
-    const [tema, setTema] = useState('');
-    const [ws, setWs] = useState(null);
+  const [mensajes, setMensajes] = useState([]);
+  const [tema, setTema] = useState('');
+  const webSocketServiceRef = useRef(null);
+  const hasConnectedRef = useRef(false);
 
-    useEffect(() => {
-        const connectWebSocket = () => {
-            const socket = new WebSocket('ws://localhost:8000/ws/chat/');
-    
-            socket.onopen = () => {
-                console.log('Conexión WebSocket abierta');
-            };
-    
-            socket.onerror = (error) => {
-                console.log("Error en el WebSocket:", error);
-            };
-    
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                setMensajes((prevMensajes) => [...prevMensajes, data.mensaje]);
-            };
-    
-            socket.onclose = (event) => {
-                console.log('Conexión WebSocket cerrada', event.code);
-                if (event.code !== 1000 && event.code !== 1001) {
-                    console.log('Intentando reconectar WebSocket en 2 segundos...');
-                    setTimeout(() => {
-                        connectWebSocket();
-                    }, 2000);
-                }
-            };
-    
-            setWs(socket);
-        };
-    
-        // Delay de 500ms antes de conectar
-        const timeout = setTimeout(() => {
-            connectWebSocket();
-        }, 500);
-    
-        return () => {
-            clearTimeout(timeout);
-        };
-    }, []);
-    
+  useEffect(() => {
+    if (!hasConnectedRef.current) {
+      const service = createWebSocketService('ws://localhost:8000/ws/chat/', (mensaje) => {
+        setMensajes((prevMensajes) => [...prevMensajes, mensaje]);
+      });
 
-    const iniciarConversacionHandler = async () => {
-        if (!tema.trim()) {
-            alert("Por favor, introduce un tema válido.");
-            return;
+      service.connectWithDelay(500);
+      webSocketServiceRef.current = service;
+      hasConnectedRef.current = true;
+
+      return () => {
+        if (webSocketServiceRef.current) {
+          webSocketServiceRef.current.close();
         }
-        
-        try {
-            const response = await iniciarConversacion(tema);
-            console.log('Conversación iniciada:', response);
-            if (response.error) {
-                console.error("Error al iniciar la conversación:", response.error);
-                alert(response.error);
-            } else {
-                // Enviar el tema al WebSocket para iniciar la conversación entre IA
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({ mensaje: tema }));  // Enviamos el tema al WebSocket
-                    console.log("Tema enviado al WebSocket:", tema);
-                } else {
-                    console.error("El WebSocket no está abierto.");
-                }
-            }
-        } catch (error) {
-            console.error("Error al iniciar la conversación:", error);
-            alert("Ocurrió un error al iniciar la conversación.");
+      };
+    }
+  }, []);
+
+  const iniciarConversacionHandler = async () => {
+    if (!tema.trim()) {
+      alert("Por favor, introduce un tema válido.");
+      return;
+    }
+
+    try {
+      const response = await iniciarConversacion(tema);
+      console.log('Conversación iniciada:', response);
+      if (response.error) {
+        console.error("Error al iniciar la conversación:", response.error);
+        alert(response.error);
+      } else {
+        if (webSocketServiceRef.current) {
+          webSocketServiceRef.current.sendMessage(tema);
+        } else {
+          console.error("El servicio WebSocket no está disponible.");
         }
-    };
+      }
+    } catch (error) {
+      console.error("Error al iniciar la conversación:", error);
+      alert("Ocurrió un error al iniciar la conversación.");
+    }
+  };
 
-    return (
-        <div>
-            <input
-                type="text"
-                value={tema}
-                onChange={(e) => setTema(e.target.value)}
-                placeholder="Tema de la conversación"
-            />
-            <button onClick={iniciarConversacionHandler}>Iniciar Conversación</button>
-
-            <div>
-                {mensajes.map((msg, index) => (
-                    <p key={index}>{msg}</p>
-                ))}
-            </div>
-        </div>
-    );
+  return (
+    <div>
+      <input
+        type="text"
+        value={tema}
+        onChange={(e) => setTema(e.target.value)}
+        placeholder="Tema de la conversación"
+      />
+      <button onClick={iniciarConversacionHandler}>Iniciar Conversación</button>
+      <div>
+        {mensajes.map((msg, index) => (
+          <p key={index}>{msg}</p>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default ChatWebSocket;

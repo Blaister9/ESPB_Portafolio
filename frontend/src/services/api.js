@@ -22,3 +22,46 @@ export async function obtenerConversacion() {
     const data = await response.json();
     return data;
 }
+
+// Función para obtener todos los proyectos
+export async function obtenerProyectos() {
+    const response = await fetch(`${BASE_URL}proyectos/`, {
+        method: "GET",
+    });
+    const data = await response.json();
+    return data;
+}
+
+// Función para crear un nuevo proyecto
+export async function crearProyecto(proyecto) {
+    const response = await fetch(`${BASE_URL}proyectos/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(proyecto),
+    });
+    const data = await response.json();
+    return data;
+}
+
+// Función para actualizar un proyecto existente
+export async function actualizarProyecto(id, proyecto) {
+    const response = await fetch(`${BASE_URL}proyectos/${id}/`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(proyecto),
+    });
+    const data = await response.json();
+    return data;
+}
+
+// Función para eliminar un proyecto
+export async function eliminarProyecto(id) {
+    const response = await fetch(`${BASE_URL}proyectos/${id}/`, {
+        method: "DELETE",
+    });
+    return response.ok;
+}
