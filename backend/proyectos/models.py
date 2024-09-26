@@ -9,6 +9,7 @@ class Proyecto(models.Model):
     link_demo = models.URLField(blank=True, null=True)  # Link a la demo opcional
     imagen = models.ImageField(upload_to='proyectos/', blank=True, null=True)  # Imagen opcional
     fecha_creacion = models.DateField(auto_now_add=True)  # Fecha de creación automática
+    logros = models.TextField(blank=True, null=True)  # Nuevo campo
 
     def __str__(self):
         return self.titulo

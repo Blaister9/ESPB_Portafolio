@@ -10,7 +10,8 @@ const Projects = () => {
     titulo: '',
     descripcion: '',
     tecnologias: '',
-    link_repositorio: ''
+    link_repositorio: '',
+    logros: ''
   });
   const websocketServiceRef = useRef(null);
 
@@ -134,6 +135,14 @@ const Projects = () => {
             required
           />
         </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-300">Logros</label>
+          <textarea
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+            value={nuevoProyecto.logros}
+            onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, logros: e.target.value })}
+          />
+        </div>
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Crear Proyecto
         </button>
@@ -149,6 +158,7 @@ const Projects = () => {
             description={proyecto.descripcion}
             tecnologias={proyecto.tecnologias}
             link={proyecto.link_repositorio}
+            logros={proyecto.logros}
             onEliminar={() => handleEliminar(proyecto.id)}
           />
         ))}

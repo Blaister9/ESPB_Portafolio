@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { actualizarProyecto } from '../services/api';
 
-const ProjectCard = ({ id, title, description, tecnologias, link, onEliminar }) => {
+const ProjectCard = ({ id, title, description, tecnologias, link, logros, onEliminar }) => {
   const [editando, setEditando] = useState(false);
   const [proyectoEditado, setProyectoEditado] = useState({
     titulo: title || '',
     descripcion: description || '',
     tecnologias: tecnologias || '',  // Aseguramos que tecnologías no sea undefined
-    link_repositorio: link || ''
+    link_repositorio: link || '',
+    logros: logros || ''
   });
 
   const handleActualizarProyecto = async (e) => {
@@ -69,6 +70,14 @@ const ProjectCard = ({ id, title, description, tecnologias, link, onEliminar }) 
               onChange={(e) => setProyectoEditado({ ...proyectoEditado, link_repositorio: e.target.value })}
             />
           </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300">Logros</label>
+            <textarea
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              value={proyectoEditado.logros}
+              onChange={(e) => setProyectoEditado({ ...proyectoEditado, logros: e.target.value })}
+            />
+          </div>
           <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Guardar
           </button>
@@ -82,10 +91,11 @@ const ProjectCard = ({ id, title, description, tecnologias, link, onEliminar }) 
         </form>
       ) : (
         <>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{title}</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">{description}</p>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">{tecnologias || 'Sin tecnologías'}</p>
-          <a href={link} className="text-blue-500 dark:text-gray-300 mt-4 inline-block">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Título: {title}</h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">Descripción: {description}</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">Tecnologías: {tecnologias || 'Sin tecnologías'}</p>
+          {logros && <p className="mt-2 text-gray-600 dark:text-gray-300">Logros: {logros}</p>}
+          <a href={link} className="text-blue-500 dark:text-gray-300 mt-4 inline-block"> URL:
             Ver más
           </a>
           <div className="mt-4">
