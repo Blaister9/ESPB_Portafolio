@@ -1,0 +1,32 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to server
+        run: |
+          ssh root@your-server-ip << EOF
+            cd /var/www/santensor/ESPB_Portafolio
+            git pull origin main
+            source /var/www/santensor/venv/bin/activate  # Activar el ambiente virtual
+            cd backend
+            pip install -r requirements.txt  # Instalar dependencias
+            python manage.py migrate  # Aplicar migraciones
+            sudo systemctl restart daphne  # Reiniciar Daphne
+            sudo systemctl reload nginx  # Recargar Nginx
+          EOF
