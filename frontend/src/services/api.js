@@ -1,5 +1,5 @@
 // frontend/src/services/api.js
-const BASE_URL = "http://santensor.com/api/";
+const BASE_URL = "https://santensor.com/api/";
 
 // Función para iniciar una conversación
 export async function iniciarConversacion(tema) {
