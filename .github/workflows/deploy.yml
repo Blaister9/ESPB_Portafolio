@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh root@your-server-ip << EOF
+          ssh root@154.38.183.197 << EOF
             cd /var/www/santensor/ESPB_Portafolio
             git pull origin main
             source /var/www/santensor/venv/bin/activate  # Activar el ambiente virtual
