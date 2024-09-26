@@ -26,7 +26,7 @@ const Projects = () => {
 
       if (!websocketServiceRef.current) {
         websocketServiceRef.current = createWebSocketService(
-          'ws://localhost:8000/ws/proyectos/',
+          'wss://' + window.location.host + '/ws/proyectos/',
           (data) => {
             console.log('Mensaje recibido desde WebSocket en Projects:', data);
             console.log('Tipo de dato recibido:', typeof data);

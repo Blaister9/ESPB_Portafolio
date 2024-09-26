@@ -12,7 +12,7 @@ const ChatWebSocket = () => {
 
   useEffect(() => {
     if (!hasConnectedRef.current) {
-      const service = createWebSocketService('ws://localhost:8000/ws/chat/', (mensaje) => {
+      const service = createWebSocketService('wss://' + window.location.host + '/ws/chat/', (mensaje) => {
         setMensajes((prevMensajes) => [...prevMensajes, mensaje]);
       });
       service.connectWithDelay(500);
