@@ -150,7 +150,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/django_debug.log',  # Cambia esto a donde quieras guardar el log
+            'filename': '/var/www/santensor/ESPB_Portafolio/backend/logs/django_debug.log',  # Cambia esto a un directorio accesible
         },
     },
     'loggers': {
@@ -161,4 +161,5 @@ LOGGING = {
         },
     },
 }
+
 
