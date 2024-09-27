@@ -1,6 +1,6 @@
 // frontend/src/pages/ChatPage.js
 import React from 'react';
-import ChatWebSocket from '../components/chat/ChatWebSocket.js';
+import ChatWebSocket from '../../components/features/Chat/ChatWebSocket';
 
 const ChatPage = () => {
     return (

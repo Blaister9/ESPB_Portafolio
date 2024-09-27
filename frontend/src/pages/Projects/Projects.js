@@ -1,8 +1,8 @@
-// src/pages/Projects.js
+// src/pages/Projects/Projects.js
 import React, { useEffect, useState, useRef } from 'react';
-import ProjectCard from '../components/ProjectCard';
-import { obtenerProyectos, crearProyecto, eliminarProyecto } from '../services/api';
-import createWebSocketService from '../services/websocket';
+import ProjectCard from '../../components/features/Projects/ProjectCard';
+import { obtenerProyectos, crearProyecto, eliminarProyecto } from '../../services/api';
+import createWebSocketService from '../../services/websocket';
 
 const Projects = () => {
   const [proyectos, setProyectos] = useState([]);

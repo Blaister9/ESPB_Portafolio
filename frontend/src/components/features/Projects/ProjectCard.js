@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { actualizarProyecto } from '../services/api';
+import { actualizarProyecto } from '../../../services/api';
 
 const ProjectCard = ({ id, title, description, tecnologias, link, logros, onEliminar }) => {
   const [editando, setEditando] = useState(false);

@@ -1,7 +1,7 @@
 // src/pages/Home.js
 import React from 'react';
 import { motion } from 'framer-motion';
-import Button from '../components/Button';
+import Button from '../../components/common/Button';
 
 const Home = () => {
   return (

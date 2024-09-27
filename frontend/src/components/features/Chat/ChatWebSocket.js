@@ -1,8 +1,8 @@
 // /home/epaz/Documentos/2_Conversation/frontend/src/components/chat/ChatWebSocket.js
 
 import React, { useEffect, useState, useRef } from 'react';
-import { iniciarConversacion } from '../../services/api';
-import createWebSocketService from '../../services/websocket';
+import { iniciarConversacion } from '../../../services/api';
+import createWebSocketService from '../../../services/websocket';
 
 const ChatWebSocket = () => {
   const [mensajes, setMensajes] = useState([]);

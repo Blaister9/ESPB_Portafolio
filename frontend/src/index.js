@@ -1,10 +1,10 @@
 // src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import './styles/index.css';
 import App from './App';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ThemeProvider } from './context/ThemeContext';  // Asegúrate de importar el ThemeProvider
+import { ThemeProvider } from '../src/contexts/ThemeContext';  // Asegúrate de importar el ThemeProvider
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
