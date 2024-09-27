@@ -25,24 +25,23 @@ jobs:
       - name: Deploy to server
         run: |
           ssh root@154.38.183.197 << EOF
-            # Navegar al directorio del proyecto
             cd /var/www/santensor/ESPB_Portafolio
-
+            
             # Obtener los últimos cambios del repositorio
             git pull origin main
 
-            # Frontend: instalar dependencias y construir el proyecto
+            # Frontend: instalar dependencias y generar el build de producción
             cd frontend
-            npm install  # Instalar dependencias de Node.js
-            npm run build  # Generar el build de producción
-            
-            # Backend: activar el ambiente virtual y manejar dependencias y migraciones
+            npm install
+            npm run build
+
+            # Backend: activar el entorno virtual correcto y manejar dependencias y migraciones
+            source /var/www/santensor/ESPB_Portafolio/venv/bin/activate  # Usar el entorno correcto
             cd ../backend
-            source /var/www/santensor/venv/bin/activate  # Activar el ambiente virtual de Python
-            pip install -r requirements.txt  # Instalar dependencias de Python
-            python manage.py migrate  # Aplicar migraciones
+            pip install -r requirements.txt
+            python manage.py migrate
             
             # Reiniciar servicios
-            sudo systemctl restart daphne  # Reiniciar Daphne
-            sudo systemctl reload nginx  # Recargar Nginx para reflejar cambios en frontend
+            sudo systemctl restart daphne
+            sudo systemctl reload nginx
           EOF
