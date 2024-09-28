@@ -24,13 +24,12 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh root@154.38.183.197 << EOF
+          ssh root@154.38.183.197 << 'EOF'
             cd /var/www/santensor/ESPB_Portafolio
             
-            # Cargar nvm
+            # Cargar nvm correctamente
             export NVM_DIR="/root/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Esto carga nvm
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Esto carga nvm bash_completion
+            . "$NVM_DIR/nvm.sh"  # Cargar nvm de manera explícita
 
             # Verifica que node y npm están disponibles
             node -v
