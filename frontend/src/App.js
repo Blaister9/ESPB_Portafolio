@@ -7,6 +7,7 @@ import About from '../src/pages/About/About';
 import Projects from '../src/pages/Projects/Projects';
 import Contact from '../src/pages/Contact/Contact';
 import ChatPage from '../src/pages/ChatPage/ChatPage';
+import Footer from './components/layout/Footer';
 import './styles/App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/chat" element={<ChatPage />} />
       </Routes>
+      <Footer/>
     </div>
   );
 }
