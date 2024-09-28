@@ -1,5 +1,6 @@
-// src/pages/Projects/Projects.js
 import React, { useEffect, useState, useRef } from 'react';
+import ScrollConnector from '../../components/common/ScrollConnector'; // Agregamos ScrollConnector
+import FloatingSection from '../../components/common/FloatingSection'; // Reutilizamos el componente FloatingSection para el efecto flotante
 import ProjectCard from '../../components/features/Projects/ProjectCard';
 import { obtenerProyectos, crearProyecto, eliminarProyecto } from '../../services/api';
 import createWebSocketService from '../../services/websocket';
@@ -29,15 +30,11 @@ const Projects = () => {
           'wss://' + window.location.host + '/ws/proyectos/',
           (data) => {
             console.log('Mensaje recibido desde WebSocket en Projects:', data);
-            console.log('Tipo de dato recibido:', typeof data);
-            console.log('Estructura del dato:', JSON.stringify(data, null, 2));
-          
             if (!data) {
               console.error('Datos de WebSocket son undefined');
               return;
             }
-          
-            switch(data.accion) {
+            switch (data.accion) {
               case 'create':
                 setProyectos((prevProyectos) => [...prevProyectos, data.data]);
                 break;
@@ -90,80 +87,91 @@ const Projects = () => {
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-gray-100">Proyectos</h1>
+    <ScrollConnector>
+      
+      {/* Título de la página */}
+      <FloatingSection className="h-screen flex items-center justify-center">
+        <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-gray-100">
+          🌟 Proyectos
+        </h1>
+      </FloatingSection>
 
       {/* Formulario para crear un nuevo proyecto */}
-      <form className="mt-8 max-w-lg mx-auto" onSubmit={handleCrearProyecto}>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300">Título</label>
-          <input
-            type="text"
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            value={nuevoProyecto.titulo}
-            onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, titulo: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300">Descripción</label>
-          <input
-            type="text"
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            value={nuevoProyecto.descripcion}
-            onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, descripcion: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300">Tecnologías</label>
-          <input
-            type="text"
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            value={nuevoProyecto.tecnologias}
-            onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, tecnologias: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300">Link del Repositorio</label>
-          <input
-            type="url"
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            value={nuevoProyecto.link_repositorio}
-            onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, link_repositorio: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300">Logros</label>
-          <textarea
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            value={nuevoProyecto.logros}
-            onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, logros: e.target.value })}
-          />
-        </div>
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Crear Proyecto
-        </button>
-      </form>
+      <FloatingSection className="h-screen flex items-center justify-center">
+        <form className="max-w-lg mx-auto" onSubmit={handleCrearProyecto}>
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300">Título</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              value={nuevoProyecto.titulo}
+              onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, titulo: e.target.value })}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300">Descripción</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              value={nuevoProyecto.descripcion}
+              onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, descripcion: e.target.value })}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300">Tecnologías</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              value={nuevoProyecto.tecnologias}
+              onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, tecnologias: e.target.value })}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300">Link del Repositorio</label>
+            <input
+              type="url"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              value={nuevoProyecto.link_repositorio}
+              onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, link_repositorio: e.target.value })}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300">Logros</label>
+            <textarea
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              value={nuevoProyecto.logros}
+              onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, logros: e.target.value })}
+            />
+          </div>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Crear Proyecto
+          </button>
+        </form>
+      </FloatingSection>
 
       {/* Mostrar proyectos */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {proyectos.map((proyecto, index) => (
-          <ProjectCard
-            key={index}
-            id={proyecto.id}
-            title={proyecto.titulo}
-            description={proyecto.descripcion}
-            tecnologias={proyecto.tecnologias}
-            link={proyecto.link_repositorio}
-            logros={proyecto.logros}
-            onEliminar={() => handleEliminar(proyecto.id)}
-          />
-        ))}
-      </div>
-    </div>
+      <FloatingSection className="h-screen flex items-center justify-center">
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {proyectos.map((proyecto, index) => (
+            <ProjectCard
+              key={index}
+              id={proyecto.id}
+              title={proyecto.titulo}
+              description={proyecto.descripcion}
+              tecnologias={proyecto.tecnologias}
+              link={proyecto.link_repositorio}
+              logros={proyecto.logros}
+              onEliminar={() => handleEliminar(proyecto.id)}
+            />
+          ))}
+        </div>
+      </FloatingSection>
+
+    </ScrollConnector>
   );
 };
 

@@ -4,7 +4,7 @@ import { FaGithub, FaWhatsapp } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white py-6">
+    <footer className="fixed bottom-0 left-0 w-full bg-gray-800 text-white py-4 z-50">
       <div className="container mx-auto flex flex-col items-center">
         <div className="mb-4">
           <span className="text-lg font-semibold">Conéctate conmigo:</span>

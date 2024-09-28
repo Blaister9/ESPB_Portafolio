@@ -5,7 +5,7 @@ import ToggleDarkMode from '../../components/ui/ToggleDarkMode';
 
 const Navbar = () => {
   return (
-    <nav className="flex items-center justify-between p-4 bg-white dark:bg-dark shadow-md">
+    <nav className="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-white dark:bg-dark shadow-md z-50">
       <div>
         <Link to="/" className="text-xl font-bold text-gray-800 dark:text-light">
           Mi Portafolio
