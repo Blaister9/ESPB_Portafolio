@@ -27,6 +27,15 @@ jobs:
           ssh root@154.38.183.197 << EOF
             cd /var/www/santensor/ESPB_Portafolio
             
+            # Cargar nvm
+            export NVM_DIR="/root/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Esto carga nvm
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Esto carga nvm bash_completion
+
+            # Verifica que node y npm están disponibles
+            node -v
+            npm -v
+
             # Descarta cualquier cambio local no comprometido para evitar conflictos con el git pull
             git reset --hard
 
@@ -35,7 +44,7 @@ jobs:
 
             # Frontend: instalar dependencias y generar el build de producción
             cd frontend
-            npm install
+            npm install  # Ahora que nvm está cargado, npm funcionará
             npm run build
 
             # Backend: activar el entorno virtual correcto y manejar dependencias y migraciones
