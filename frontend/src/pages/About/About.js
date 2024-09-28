@@ -1,4 +1,4 @@
-// src/pages/About.js
+// src/pages/About/About.js
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -14,7 +14,7 @@ const About = () => {
         Sobre Mí
       </h1>
       <motion.p
-        className="mt-4 text-center text-gray-600 dark:text-gray-300"
+        className="mt-4 text-center text-gray-600 dark:text-gray-300 leading-relaxed"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 1.0 }}
@@ -22,7 +22,7 @@ const About = () => {
         Soy un desarrollador web con experiencia en React, Django, IA y más.
       </motion.p>
       <motion.p
-        className="mt-4 text-center text-gray-600 dark:text-gray-300"
+        className="mt-4 text-center text-gray-600 dark:text-gray-300 leading-relaxed"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 1.0 }}
