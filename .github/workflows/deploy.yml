@@ -27,6 +27,9 @@ jobs:
           ssh root@154.38.183.197 << EOF
             cd /var/www/santensor/ESPB_Portafolio
             
+            # Descarta cualquier cambio local no comprometido para evitar conflictos con el git pull
+            git reset --hard
+
             # Obtener los últimos cambios del repositorio
             git pull origin main
 
