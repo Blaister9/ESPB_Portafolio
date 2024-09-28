@@ -100,7 +100,7 @@ const ProjectCard = ({ id, title, description, tecnologias, link, logros, onElim
           {logros && <p className="mt-2 text-gray-600 dark:text-gray-300">Logros: {logros}</p>}
           <a href={link} className="text-primary dark:text-blue-300 mt-4 inline-block"> Ver repositorio</a>
           <div className="mt-4 flex space-x-4">
-            <button
+            {/*<button
               className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded transition duration-200"
               onClick={() => setEditando(true)}
             >
@@ -111,7 +111,7 @@ const ProjectCard = ({ id, title, description, tecnologias, link, logros, onElim
               onClick={onEliminar}
             >
               Eliminar
-            </button>
+            </button>*/}
           </div>
         </>
       )}
