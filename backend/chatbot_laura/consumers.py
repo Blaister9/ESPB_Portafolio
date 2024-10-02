@@ -21,7 +21,8 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             text_data_json = json.loads(text_data)
-            mensaje = text_data_json['message']
+            
+            mensaje = text_data_json.get('mensaje', '')
             if not mensaje:
                 await self.send(text_data=json.dumps({'error': 'El mensaje no puede estar vacío'}))
                 return

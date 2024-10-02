@@ -139,7 +139,8 @@ class ChatbotLauraView(View):
             for i in range(k):
                 result = self.df.iloc[I[0][i]]
                 results.append({
-                    'content': result['full_content'],
+                    'pregunta': result['full_content'].get('pregunta', ''),
+                    'respuesta': result['full_content'].get('respuesta', ''),
                     'url': result['url'],
                     'type': result['type'],
                     'metadata': result['metadata'],
@@ -150,6 +151,7 @@ class ChatbotLauraView(View):
         except Exception as e:
             logger.error(f"Error en la búsqueda: {str(e)}")
             raise
+
 
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
