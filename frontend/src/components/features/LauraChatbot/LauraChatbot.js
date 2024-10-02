@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import createWebSocketService from '../../../services/websocket';
-import { enviarMensajeLaura } from '../../../services/api';
 
 const LauraChatbot = () => {
     const [mensajes, setMensajes] = useState([]);
@@ -10,9 +9,11 @@ const LauraChatbot = () => {
 
     useEffect(() => {
         if (!hasConnectedRef.current) {
+            // Conexión WebSocket
             const service = createWebSocketService('wss://' + window.location.host + '/ws/laura-chat/', (mensaje) => {
-                console.log("Mensaje recibido desde WebSocket:", mensaje);  // Añade este log
+                console.log("Mensaje recibido desde WebSocket:", mensaje);  // Log para ver el mensaje recibido
     
+                // Agregar el mensaje recibido a la lista de mensajes
                 setMensajes((prevMensajes) => [...prevMensajes, mensaje]);
             });
             service.connectWithDelay(500);
@@ -26,14 +27,15 @@ const LauraChatbot = () => {
             };
         }
     }, []);
-    
 
+    // Función para enviar el mensaje por WebSocket
     const enviarMensaje = async () => {
         if (!inputMessage.trim()) {
             alert("Por favor, introduce un mensaje válido.");
             return;
         }
 
+        // Agrega el mensaje del usuario al chat
         setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
 
         try {
@@ -41,20 +43,15 @@ const LauraChatbot = () => {
             if (webSocketServiceRef.current) {
                 webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });
             }
-
-            // Envía el mensaje a través de la API REST como respaldo
-            const respuestaAPI = await enviarMensajeLaura(inputMessage);
-            if (respuestaAPI.resultados) {
-                setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura', mensaje: respuestaAPI.resultados[0].content }]);
-            }
         } catch (error) {
-            console.error("Error al enviar mensaje:", error);
+            console.error("Error al enviar el mensaje por WebSocket:", error);
             setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Sistema', mensaje: 'Error al enviar el mensaje. Por favor, intenta de nuevo.' }]);
         }
 
         setInputMessage('');
     };
 
+    // Función para renderizar los mensajes en el chat
     const renderMensaje = (msg) => {
         // Verifica si se recibió un error
         if (msg.error) {
@@ -65,7 +62,7 @@ const LauraChatbot = () => {
                 </p>
             );
         }
-    
+
         // Si se recibió una respuesta procesada por GPT-4
         if (msg.respuesta) {
             return (
@@ -74,34 +71,14 @@ const LauraChatbot = () => {
                 </p>
             );
         }
-    
-        // Si el mensaje contiene resultados del RAG (lista de respuestas)
-        if (msg.resultados && Array.isArray(msg.resultados)) {
-            return msg.resultados.map((resultado, index) => (
-                <div key={index} className="text-gray-800 dark:text-gray-100 mb-2">
-                    {resultado.pregunta && (
-                        <p className="font-bold">Pregunta: {resultado.pregunta}</p>
-                    )}
-                    {resultado.respuesta && (
-                        <p>Respuesta: {resultado.respuesta}</p>
-                    )}
-                    {resultado.url && (
-                        <p><a href={resultado.url} target="_blank" rel="noopener noreferrer">Más información</a></p>
-                    )}
-                </div>
-            ));
-        }
-    
-        // Para mensajes de usuario o cualquier otro mensaje
+
+        // Renderiza mensajes de usuario u otros tipos de mensajes
         return (
             <p className="text-gray-800 dark:text-gray-100 mb-2">
                 <span className="font-bold">{msg.autor || "Desconocido"}:</span> {msg.mensaje || JSON.stringify(msg)}
             </p>
         );
     };
-    
-    
-    
 
     return (
         <div className="container mx-auto p-4 max-w-xl">

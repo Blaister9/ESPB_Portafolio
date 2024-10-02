@@ -65,17 +65,3 @@ export async function eliminarProyecto(id) {
     });
     return response.ok;
 }
-
-// Función para enviar un mensaje al chatbot Laura
-// Función para enviar un mensaje al chatbot Laura
-export async function enviarMensajeLaura(mensaje) {
-    const response = await fetch(`${BASE_URL}chatbot-laura/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mensaje }),  // Cambiado a "mensaje"
-    });
-    const data = await response.json();
-    return data;
-}
