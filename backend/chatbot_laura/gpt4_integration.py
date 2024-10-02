@@ -24,10 +24,10 @@ async def generar_respuesta_gpt4(resultados):
                 prompt += f"Respuesta: {resultado['respuesta']}\n\n"
 
         respuesta = await client.chat.completions.create(
-            model='gpt-4',  # Puedes ajustar el modelo si es necesario
+            model='gpt-4o-mini',  # Puedes ajustar el modelo si es necesario
             messages=[{"role": "system", "content": prompt}],
             max_tokens=500,
-            temperature=0.7
+            temperature=0.3
         )
 
         return respuesta.choices[0].message.content.strip()
