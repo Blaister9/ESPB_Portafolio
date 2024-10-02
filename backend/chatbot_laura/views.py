@@ -158,7 +158,7 @@ class ChatbotLauraView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            query = data.get('message', '')
+            query = data.get('mensaje', '')
             if not query:
                 return JsonResponse({'error': 'No message provided'}, status=400)
 
