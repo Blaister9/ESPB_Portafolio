@@ -56,13 +56,42 @@ const LauraChatbot = () => {
     };
 
     const renderMensaje = (msg) => {
-        // Intentar mostrar el contenido del mensaje basado en lo que llegue
+        // No renderizar mensajes de error
+        if (msg.error) {
+            console.error("Mensaje de error recibido:", msg.error);
+            return null;
+        }
+    
+        // Si el mensaje tiene un campo 'resultados', procesar la lista de resultados
+        if (msg.resultados && Array.isArray(msg.resultados)) {
+            return msg.resultados.map((resultado, index) => {
+                // Evitar renderizar resultados vacíos
+                if (!resultado.pregunta && !resultado.respuesta) return null;
+    
+                return (
+                    <div key={index} className="text-gray-800 dark:text-gray-100 mb-2">
+                        {resultado.pregunta && (
+                            <p className="font-bold">Pregunta: {resultado.pregunta}</p>
+                        )}
+                        {resultado.respuesta && (
+                            <p>Respuesta: {resultado.respuesta}</p>
+                        )}
+                        {resultado.url && (
+                            <p><a href={resultado.url} target="_blank" rel="noopener noreferrer">Más información</a></p>
+                        )}
+                    </div>
+                );
+            });
+        }
+    
+        // Si el mensaje no tiene 'resultados', mostrar el contenido normalmente
         return (
             <p className="text-gray-800 dark:text-gray-100 mb-2">
                 <span className="font-bold">{msg.autor || "Desconocido"}:</span> {JSON.stringify(msg.mensaje || msg)}
             </p>
         );
     };
+    
 
     return (
         <div className="container mx-auto p-4 max-w-xl">

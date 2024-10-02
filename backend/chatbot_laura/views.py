@@ -11,6 +11,7 @@ import pickle
 from openai import OpenAI
 from dotenv import load_dotenv
 import logging
+from .gpt4_integration import generar_respuesta_gpt4  # Importa la función GPT-4
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -157,7 +158,7 @@ class ChatbotLauraView(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request):
+    async def post(self, request):
         try:
             data = json.loads(request.body)
             print("Contenido recibido en el backend:", data)  # Añadir log para ver qué se recibe
@@ -166,12 +167,17 @@ class ChatbotLauraView(View):
             if not query:
                 return JsonResponse({'error': 'No se proporcionó el mensaje'}, status=400)
 
+            # Realiza la búsqueda en FAISS
             resultados = self.search(query)
-            return JsonResponse({"resultados": resultados})
+
+            # Llama a GPT-4 para mejorar la respuesta
+            respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
+
+            return JsonResponse({"respuesta": respuesta_gpt4})
         
         except json.JSONDecodeError:
             logger.error("Error decoding JSON")
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
-            logger.error(f"Error in post method: {str(e)}")
+            logger.error(f"Error en el método post: {str(e)}")
             return JsonResponse({'error': 'Internal server error'}, status=500)
