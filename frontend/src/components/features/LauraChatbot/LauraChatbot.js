@@ -11,12 +11,14 @@ const LauraChatbot = () => {
     useEffect(() => {
         if (!hasConnectedRef.current) {
             const service = createWebSocketService('wss://' + window.location.host + '/ws/laura-chat/', (mensaje) => {
+                console.log("Mensaje recibido desde WebSocket:", mensaje);  // Añade este log
+    
                 setMensajes((prevMensajes) => [...prevMensajes, mensaje]);
             });
             service.connectWithDelay(500);
             webSocketServiceRef.current = service;
             hasConnectedRef.current = true;
-
+    
             return () => {
                 if (webSocketServiceRef.current) {
                     webSocketServiceRef.current.close();
@@ -24,22 +26,23 @@ const LauraChatbot = () => {
             };
         }
     }, []);
+    
 
     const enviarMensaje = async () => {
         if (!inputMessage.trim()) {
             alert("Por favor, introduce un mensaje válido.");
             return;
         }
-        
+
         setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
-        
+
         try {
-            // Modifica el mensaje para que el campo sea "mensaje"
+            // Envía el mensaje a través del WebSocket
             if (webSocketServiceRef.current) {
-                webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });  // Envia "mensaje" al WebSocket
+                webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });
             }
-            
-            // También envía a través de la API REST como respaldo
+
+            // Envía el mensaje a través de la API REST como respaldo
             const respuestaAPI = await enviarMensajeLaura(inputMessage);
             if (respuestaAPI.resultados) {
                 setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura', mensaje: respuestaAPI.resultados[0].content }]);
@@ -52,6 +55,15 @@ const LauraChatbot = () => {
         setInputMessage('');
     };
 
+    const renderMensaje = (msg) => {
+        // Intentar mostrar el contenido del mensaje basado en lo que llegue
+        return (
+            <p className="text-gray-800 dark:text-gray-100 mb-2">
+                <span className="font-bold">{msg.autor || "Desconocido"}:</span> {JSON.stringify(msg.mensaje || msg)}
+            </p>
+        );
+    };
+
     return (
         <div className="container mx-auto p-4 max-w-xl">
             <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">
@@ -59,9 +71,7 @@ const LauraChatbot = () => {
             </h2>
             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded shadow-md mb-4 h-96 overflow-y-auto">
                 {mensajes.map((msg, index) => (
-                    <p key={index} className="text-gray-800 dark:text-gray-100 mb-2">
-                        <span className="font-bold">{msg.autor}:</span> {msg.mensaje}
-                    </p>
+                    <div key={index}>{renderMensaje(msg)}</div>
                 ))}
             </div>
             <div className="flex">

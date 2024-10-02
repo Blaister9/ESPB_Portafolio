@@ -158,9 +158,11 @@ class ChatbotLauraView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            query = data.get('mensaje', '')
+            print("Contenido recibido en el backend:", data)  # Añadir log para ver qué se recibe
+
+            query = data.get('mensaje', '')  # Asegúrate de que esto es 'mensaje'
             if not query:
-                return JsonResponse({'error': 'No message provided'}, status=400)
+                return JsonResponse({'error': 'No se proporcionó el mensaje'}, status=400)
 
             resultados = self.search(query)
             return JsonResponse({"resultados": resultados})
