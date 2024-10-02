@@ -1,4 +1,3 @@
-///home/epaz/Documentos/2_Conversation/frontend/src/components/features/LauraChatbot/LauraChatbot.js
 import React, { useEffect, useState, useRef } from 'react';
 import createWebSocketService from '../../../services/websocket';
 import { enviarMensajeLaura } from '../../../services/api';
@@ -35,9 +34,9 @@ const LauraChatbot = () => {
         setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
         
         try {
-            // Intenta enviar por WebSocket primero
+            // Modifica el mensaje para que el campo sea "mensaje"
             if (webSocketServiceRef.current) {
-                webSocketServiceRef.current.sendMessage(inputMessage);
+                webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });  // Envia "mensaje" al WebSocket
             }
             
             // También envía a través de la API REST como respaldo
