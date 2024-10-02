@@ -1,3 +1,4 @@
+///home/epaz/Documentos/2_Conversation/frontend/src/components/features/LauraChatbot/LauraChatbot.js
 import React, { useEffect, useState, useRef } from 'react';
 import createWebSocketService from '../../../services/websocket';
 import { enviarMensajeLaura } from '../../../services/api';

@@ -1,3 +1,4 @@
+///home/epaz/Documentos/2_Conversation/frontend/src/pages/LauraChatbotPage/LauraChatbotPage.js
 import React from 'react';
 import FloatingSection from '../../components/common/FloatingSection';
 import { motion } from 'framer-motion';
