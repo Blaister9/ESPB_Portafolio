@@ -62,10 +62,18 @@ const LauraChatbot = () => {
             return null;
         }
     
-        // Si el mensaje tiene un campo 'resultados', procesar la lista de resultados
+        // Verifica si es una respuesta generada por GPT-4
+        if (msg.respuesta) {
+            return (
+                <p className="text-gray-800 dark:text-gray-100 mb-2">
+                    <span className="font-bold">Laura:</span> {msg.respuesta}
+                </p>
+            );
+        }
+        
+        // Si el mensaje tiene 'resultados' del RAG, procesar la lista de resultados
         if (msg.resultados && Array.isArray(msg.resultados)) {
             return msg.resultados.map((resultado, index) => {
-                // Evitar renderizar resultados vacíos
                 if (!resultado.pregunta && !resultado.respuesta) return null;
     
                 return (
@@ -84,13 +92,14 @@ const LauraChatbot = () => {
             });
         }
     
-        // Si el mensaje no tiene 'resultados', mostrar el contenido normalmente
+        // Si el mensaje es otro tipo de mensaje (como los enviados por el usuario)
         return (
             <p className="text-gray-800 dark:text-gray-100 mb-2">
-                <span className="font-bold">{msg.autor || "Desconocido"}:</span> {JSON.stringify(msg.mensaje || msg)}
+                <span className="font-bold">{msg.autor || "Desconocido"}:</span> {msg.mensaje || JSON.stringify(msg)}
             </p>
         );
     };
+    
     
 
     return (

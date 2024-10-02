@@ -15,6 +15,7 @@ client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 # Función para generar respuesta con GPT-4
 async def generar_respuesta_gpt4(resultados):
     try:
+        print("Resultados enviados a GPT-4:", resultados)
         # Crear el prompt basado en los resultados del RAG
         prompt = "He encontrado la siguiente información. Por favor, reformúlala de manera clara y amigable para el usuario:\n\n"
         
@@ -25,7 +26,8 @@ async def generar_respuesta_gpt4(resultados):
 
         respuesta = await client.chat.completions.create(
             model='gpt-4o-mini',  # Puedes ajustar el modelo si es necesario
-            messages=[{"role": "system", "content": prompt}],
+            messages=[{"role": "system", "content": prompt},
+            {"role":"user","content":resultados}],
             max_tokens=500,
             temperature=0.3
         )
