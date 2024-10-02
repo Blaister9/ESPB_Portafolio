@@ -181,3 +181,4 @@ class ChatbotLauraView(View):
         except Exception as e:
             logger.error(f"Error en el método post: {str(e)}")
             return JsonResponse({'error': 'Internal server error'}, status=500)
+

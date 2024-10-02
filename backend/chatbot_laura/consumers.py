@@ -3,6 +3,7 @@ import json
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .views import ChatbotLauraView
+from .gpt4_integration import generar_respuesta_gpt4
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +18,10 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         logger.info(f"WebSocket desconectado para Laura Chatbot: {close_code}")
-
+        
     async def receive(self, text_data):
         try:
-            text_data_json = json.loads(text_data)
-            
+            text_data_json = json.loads(text_data)            
             mensaje = text_data_json.get('mensaje', '')
             if not mensaje:
                 await self.send(text_data=json.dumps({'error': 'El mensaje no puede estar vacío'}))
@@ -33,9 +33,12 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
             chatbot_view = ChatbotLauraView()
             resultados = chatbot_view.search(mensaje)
             
-            # Enviar respuesta
+            # Enviar resultados a GPT-4
+            respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
+
+            # Enviar respuesta mejorada a través del WebSocket
             await self.send(text_data=json.dumps({
-                'resultados': resultados
+                'respuesta': respuesta_gpt4
             }))
         except Exception as e:
             logger.error(f"Error en receive para Laura Chatbot: {e}")
