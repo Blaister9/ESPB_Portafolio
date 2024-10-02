@@ -22,3 +22,5 @@ backend/venv/
 
 # Django migration files
 */migrations/*
+backend/santensor_env/
+venv/
