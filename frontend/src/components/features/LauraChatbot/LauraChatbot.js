@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import createWebSocketService from '../../../services/websocket';
 
 const LauraChatbot = () => {
   const [mensajes, setMensajes] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const webSocketServiceRef = useRef(null);
+  const mensajesRef = useRef([]);
 
   useEffect(() => {
     console.log("Inicializando WebSocket...");
@@ -23,22 +24,35 @@ const LauraChatbot = () => {
     };
   }, []);
 
-  const handleWebSocketMessage = (mensaje) => {
+  useEffect(() => {
+    console.log("Estado de mensajes actualizado:", mensajes);
+    mensajesRef.current = mensajes;
+  }, [mensajes]);
+
+  const handleWebSocketMessage = useCallback((mensaje) => {
     console.log("Mensaje recibido en LauraChatbot:", mensaje);
     if (mensaje.respuesta) {
       console.log("Añadiendo respuesta de Laura:", mensaje.respuesta);
-      setMensajes(prevMensajes => [...prevMensajes, { autor: 'Laura', mensaje: mensaje.respuesta }]);
+      setMensajes(prevMensajes => {
+        const nuevosMensajes = [...prevMensajes, { autor: 'Laura', mensaje: mensaje.respuesta }];
+        console.log("Nuevo estado de mensajes:", nuevosMensajes);
+        return nuevosMensajes;
+      });
     } else if (mensaje.error) {
       console.log("Añadiendo mensaje de error:", mensaje.error);
       setMensajes(prevMensajes => [...prevMensajes, { autor: 'Sistema', mensaje: mensaje.error }]);
     }
-  };
+  }, []);
 
-  const enviarMensaje = () => {
+  const enviarMensaje = useCallback(() => {
     if (!inputMessage.trim()) return;
 
     console.log("Enviando mensaje:", inputMessage);
-    setMensajes(prevMensajes => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
+    setMensajes(prevMensajes => {
+      const nuevosMensajes = [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }];
+      console.log("Nuevo estado de mensajes después de enviar:", nuevosMensajes);
+      return nuevosMensajes;
+    });
 
     if (webSocketServiceRef.current) {
       webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });
@@ -47,7 +61,9 @@ const LauraChatbot = () => {
     }
 
     setInputMessage('');
-  };
+  }, [inputMessage]);
+
+  console.log("Renderizando LauraChatbot. Número de mensajes:", mensajes.length);
 
   return (
     <div className="container mx-auto p-4 max-w-xl">
