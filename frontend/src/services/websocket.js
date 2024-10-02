@@ -31,7 +31,6 @@ const createWebSocketService = (url, onMessage, maxRetries = 2) => {
       console.log('Mensaje raw recibido:', event.data);
       try {
         const data = JSON.parse(event.data);
-        console.log('Mensaje parseado:', data);
         onMessage(data);
       } catch (error) {
         console.error('Error al parsear el mensaje:', error);
