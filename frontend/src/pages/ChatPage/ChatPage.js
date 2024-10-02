@@ -1,3 +1,4 @@
+///home/epaz/Documentos/2_Conversation/frontend/src/pages/ChatPage/ChatPage.js
 import React from 'react';
 import FloatingSection from '../../components/common/FloatingSection'; // Usamos el FloatingSection para mantener el diseño flotante
 import { motion } from 'framer-motion';
