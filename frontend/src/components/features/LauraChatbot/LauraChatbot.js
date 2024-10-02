@@ -69,11 +69,14 @@ const LauraChatbot = () => {
     <div className="container mx-auto p-4 max-w-xl">
       <h2 className="text-2xl font-bold text-center mb-4">Chat con Laura</h2>
       <div className="bg-gray-100 p-4 rounded shadow-md mb-4 h-96 overflow-y-auto">
-        {mensajes.map((msg, index) => (
-          <p key={index} className="mb-2">
-            <span className="font-bold">{msg.autor}:</span> {msg.mensaje}
-          </p>
-        ))}
+        {mensajes.map((msg, index) => {
+          console.log(`Renderizando mensaje ${index}:`, msg);
+          return (
+            <p key={index} className="mb-2">
+              <span className="font-bold">{msg.autor}:</span> {msg.mensaje}
+            </p>
+          );
+        })}
       </div>
       <div className="flex">
         <input
