@@ -1,63 +1,60 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import createWebSocketService from '../../../services/websocket';
 
 const LauraChatbot = () => {
   const [mensajes, setMensajes] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const webSocketServiceRef = useRef(null);
-  const hasConnectedRef = useRef(false);
-
-  const handleWebSocketMessage = useCallback((mensaje) => {
-    console.log("Mensaje recibido desde WebSocket:", mensaje);
-    if (mensaje.respuesta) {
-      setMensajes(prevMensajes => [...prevMensajes, { autor: 'Laura', mensaje: mensaje.respuesta }]);
-    } else if (mensaje.error) {
-      setMensajes(prevMensajes => [...prevMensajes, { autor: 'Sistema', mensaje: mensaje.error }]);
-    }
-  }, []);
 
   useEffect(() => {
-    if (!hasConnectedRef.current) {
-      const service = createWebSocketService(
-        'wss://' + window.location.host + '/ws/laura-chat/',
-        handleWebSocketMessage
-      );
-      service.connectWithDelay(500);
-      webSocketServiceRef.current = service;
-      hasConnectedRef.current = true;
-    }
+    console.log("Inicializando WebSocket...");
+    const service = createWebSocketService(
+      'wss://' + window.location.host + '/ws/laura-chat/',
+      handleWebSocketMessage
+    );
+    service.connectWithDelay(500);
+    webSocketServiceRef.current = service;
 
     return () => {
+      console.log("Cerrando WebSocket...");
       if (webSocketServiceRef.current) {
         webSocketServiceRef.current.close();
       }
     };
-  }, [handleWebSocketMessage]);
+  }, []);
 
-  const enviarMensaje = useCallback(() => {
-    if (!inputMessage.trim()) {
-      alert("Por favor, introduce un mensaje válido.");
-      return;
+  const handleWebSocketMessage = (mensaje) => {
+    console.log("Mensaje recibido en LauraChatbot:", mensaje);
+    if (mensaje.respuesta) {
+      console.log("Añadiendo respuesta de Laura:", mensaje.respuesta);
+      setMensajes(prevMensajes => [...prevMensajes, { autor: 'Laura', mensaje: mensaje.respuesta }]);
+    } else if (mensaje.error) {
+      console.log("Añadiendo mensaje de error:", mensaje.error);
+      setMensajes(prevMensajes => [...prevMensajes, { autor: 'Sistema', mensaje: mensaje.error }]);
     }
+  };
 
-    const nuevoMensaje = { autor: 'Usuario', mensaje: inputMessage };
-    setMensajes(prevMensajes => [...prevMensajes, nuevoMensaje]);
+  const enviarMensaje = () => {
+    if (!inputMessage.trim()) return;
+
+    console.log("Enviando mensaje:", inputMessage);
+    setMensajes(prevMensajes => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
 
     if (webSocketServiceRef.current) {
       webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });
+    } else {
+      console.error("WebSocket no inicializado");
     }
 
     setInputMessage('');
-  }, [inputMessage]);
+  };
 
   return (
     <div className="container mx-auto p-4 max-w-xl">
-      <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">
-        Chat con Laura
-      </h2>
-      <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded shadow-md mb-4 h-96 overflow-y-auto">
+      <h2 className="text-2xl font-bold text-center mb-4">Chat con Laura</h2>
+      <div className="bg-gray-100 p-4 rounded shadow-md mb-4 h-96 overflow-y-auto">
         {mensajes.map((msg, index) => (
-          <p key={index} className="text-gray-800 dark:text-gray-100 mb-2">
+          <p key={index} className="mb-2">
             <span className="font-bold">{msg.autor}:</span> {msg.mensaje}
           </p>
         ))}
@@ -69,11 +66,11 @@ const LauraChatbot = () => {
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
           placeholder="Escribe tu mensaje aquí"
-          className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-l bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition duration-200 focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="flex-grow p-3 border rounded-l"
         />
         <button
           onClick={enviarMensaje}
-          className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-r transition duration-200"
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-r"
         >
           Enviar
         </button>
