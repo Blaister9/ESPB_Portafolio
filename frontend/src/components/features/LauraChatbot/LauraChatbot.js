@@ -56,13 +56,17 @@ const LauraChatbot = () => {
     };
 
     const renderMensaje = (msg) => {
-        // No renderizar mensajes de error
+        // Verifica si se recibió un error
         if (msg.error) {
             console.error("Mensaje de error recibido:", msg.error);
-            return null;
+            return (
+                <p className="text-red-600">
+                    <span className="font-bold">Error:</span> {msg.error}
+                </p>
+            );
         }
     
-        // Verifica si es una respuesta generada por GPT-4
+        // Si se recibió una respuesta procesada por GPT-4
         if (msg.respuesta) {
             return (
                 <p className="text-gray-800 dark:text-gray-100 mb-2">
@@ -70,35 +74,32 @@ const LauraChatbot = () => {
                 </p>
             );
         }
-        
-        // Si el mensaje tiene 'resultados' del RAG, procesar la lista de resultados
-        if (msg.resultados && Array.isArray(msg.resultados)) {
-            return msg.resultados.map((resultado, index) => {
-                if (!resultado.pregunta && !resultado.respuesta) return null;
     
-                return (
-                    <div key={index} className="text-gray-800 dark:text-gray-100 mb-2">
-                        {resultado.pregunta && (
-                            <p className="font-bold">Pregunta: {resultado.pregunta}</p>
-                        )}
-                        {resultado.respuesta && (
-                            <p>Respuesta: {resultado.respuesta}</p>
-                        )}
-                        {resultado.url && (
-                            <p><a href={resultado.url} target="_blank" rel="noopener noreferrer">Más información</a></p>
-                        )}
-                    </div>
-                );
-            });
+        // Si el mensaje contiene resultados del RAG (lista de respuestas)
+        if (msg.resultados && Array.isArray(msg.resultados)) {
+            return msg.resultados.map((resultado, index) => (
+                <div key={index} className="text-gray-800 dark:text-gray-100 mb-2">
+                    {resultado.pregunta && (
+                        <p className="font-bold">Pregunta: {resultado.pregunta}</p>
+                    )}
+                    {resultado.respuesta && (
+                        <p>Respuesta: {resultado.respuesta}</p>
+                    )}
+                    {resultado.url && (
+                        <p><a href={resultado.url} target="_blank" rel="noopener noreferrer">Más información</a></p>
+                    )}
+                </div>
+            ));
         }
     
-        // Si el mensaje es otro tipo de mensaje (como los enviados por el usuario)
+        // Para mensajes de usuario o cualquier otro mensaje
         return (
             <p className="text-gray-800 dark:text-gray-100 mb-2">
                 <span className="font-bold">{msg.autor || "Desconocido"}:</span> {msg.mensaje || JSON.stringify(msg)}
             </p>
         );
     };
+    
     
     
 
