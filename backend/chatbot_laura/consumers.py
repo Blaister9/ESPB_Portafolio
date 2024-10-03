@@ -31,7 +31,7 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
             
             # Usar la lógica de ChatbotLauraLogic para procesar el mensaje
             chatbot_logic = ChatbotLauraLogic()
-            resultados = await chatbot_logic.search(mensaje)
+            resultados = chatbot_logic.search(mensaje)
 
             # Formatear los resultados para hacerlos más legibles
             formatted_resultados = [
