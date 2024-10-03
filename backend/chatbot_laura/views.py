@@ -127,7 +127,7 @@ class ChatbotLauraView:
 
 @api_view(['POST'])
 @csrf_exempt
-async def chatbot_laura_view(request):
+def chatbot_laura_view(request):
     try:
         data = json.loads(request.body)
         query = data.get('mensaje', '')
