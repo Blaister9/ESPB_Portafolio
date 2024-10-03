@@ -6,6 +6,7 @@ import numpy as np
 import pickle
 from openai import OpenAI
 from dotenv import load_dotenv
+from django.conf import settings
 import logging
 
 # Configurar logging para Django
