@@ -47,7 +47,7 @@ class ChatbotLauraView:
             if os.path.exists(self.embedding_file) and os.path.exists(self.index_file):
                 logger.info("Cargando embeddings y FAISS index desde archivo...")
                 self.embeddings = self.load_embeddings(self.embedding_file)
-                self.index = faiss.read_index(self.index_file)                
+                self.index = faiss.read_index(self.index_file)
             else:
                 logger.info("Generando nuevos embeddings y FAISS index...")
                 self.df = self.load_and_process_data(self.json_file)
@@ -127,6 +127,7 @@ class ChatbotLauraView:
             logger.error(f"Error en la búsqueda: {str(e)}")
             raise
 
+# La función que maneja solicitudes POST y pasa los resultados por GPT-4 antes de enviarlos
 @api_view(['POST'])
 @csrf_exempt
 async def chatbot_laura_view(request):
@@ -137,10 +138,11 @@ async def chatbot_laura_view(request):
             return JsonResponse({'error': 'No se proporcionó el mensaje'}, status=status.HTTP_400_BAD_REQUEST)
 
         chatbot_view = ChatbotLauraView()
-        resultados = chatbot_view.search(query)
-
-        # Llamar a GPT-4
+        resultados = chatbot_view.search(query)  # Primero busca en FAISS
+        
+        # Ahora pasamos los resultados por GPT-4
         respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
+        
         return Response({'respuesta': respuesta_gpt4}, status=status.HTTP_200_OK)
 
     except json.JSONDecodeError:

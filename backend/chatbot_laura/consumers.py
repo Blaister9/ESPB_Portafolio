@@ -22,32 +22,24 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             text_data_json = json.loads(text_data)
-            
             mensaje = text_data_json.get('mensaje', '')
+            
             if not mensaje:
                 await self.send(text_data=json.dumps({'error': 'El mensaje no puede estar vacío'}))
                 return
 
             logger.info(f"Mensaje recibido para Laura Chatbot: {mensaje}")
-            
+
             # Usar ChatbotLauraView para procesar el mensaje
             chatbot_view = ChatbotLauraView()
-            resultados = chatbot_view.search(mensaje)
-            
-            # Procesar resultados para hacerlos más legibles
-            formatted_resultados = [
-                {
-                    'pregunta': res.get('pregunta', 'Sin pregunta'),
-                    'respuesta': res.get('respuesta', 'Sin respuesta'),
-                    'url': res.get('url', ''),
-                    'similarity_score': res.get('similarity_score', 0)
-                } 
-                for res in resultados
-            ]
-            
-            # Enviar respuesta
+            resultados = await chatbot_view.search(mensaje)  # FAISS busca el mensaje
+
+            # Procesar los resultados a través de GPT-4
+            respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
+
+            # Enviar la respuesta de GPT-4 al cliente
             await self.send(text_data=json.dumps({
-                'resultados': formatted_resultados
+                'respuesta': respuesta_gpt4
             }))
         except Exception as e:
             logger.error(f"Error en receive para Laura Chatbot: {e}")
