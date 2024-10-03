@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# chatbot_laura/consumers.py
+# chatbot_laura/consumers.py
+>>>>>>> 4fec0c9 (Ajustes para mejorar WebSocket y manejo de mensajes en LauraChatbot)
 import json
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -32,12 +37,33 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
             # Usar la instancia existente de ChatbotLauraView
             resultados = self.chatbot_view.search(mensaje)
             
+<<<<<<< HEAD
             # Enviar resultados a GPT-4
             respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
 
             # Enviar respuesta mejorada a través del WebSocket
             await self.send(text_data=json.dumps({
                 'respuesta': respuesta_gpt4
+=======
+            # Usar ChatbotLauraView para procesar el mensaje
+            chatbot_view = ChatbotLauraView()
+            resultados = chatbot_view.search(mensaje)
+            
+            # Procesar resultados para hacerlos más legibles
+            formatted_resultados = [
+                {
+                    'pregunta': res.get('pregunta', 'Sin pregunta'),
+                    'respuesta': res.get('respuesta', 'Sin respuesta'),
+                    'url': res.get('url', ''),
+                    'similarity_score': res.get('similarity_score', 0)
+                } 
+                for res in resultados
+            ]
+            
+            # Enviar respuesta
+            await self.send(text_data=json.dumps({
+                'resultados': formatted_resultados
+>>>>>>> 4fec0c9 (Ajustes para mejorar WebSocket y manejo de mensajes en LauraChatbot)
             }))
         except Exception as e:
             logger.error(f"Error en receive para Laura Chatbot: {e}")

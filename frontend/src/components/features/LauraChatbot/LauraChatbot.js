@@ -7,11 +7,102 @@ const LauraChatbot = () => {
   const webSocketServiceRef = useRef(null);
   const mensajesRef = useRef([]);
 
+<<<<<<< HEAD
   useEffect(() => {
     console.log("Inicializando WebSocket...");
     const service = createWebSocketService(
       'wss://' + window.location.host + '/ws/laura-chat/',
       handleWebSocketMessage
+=======
+    useEffect(() => {
+        if (!hasConnectedRef.current) {
+            const service = createWebSocketService('wss://' + window.location.host + '/ws/laura-chat/', (mensaje) => {
+                console.log("Mensaje recibido desde WebSocket:", mensaje);  // Log para inspeccionar el mensaje recibido
+
+                // Verifica si la respuesta tiene una estructura correcta
+                if (mensaje.resultados) {
+                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (WebSocket)', mensaje: mensaje.resultados }]);
+                } else {
+                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Desconocido', mensaje: 'Formato inesperado de WebSocket' }]);
+                }
+            });
+
+            service.connectWithDelay(500);
+            webSocketServiceRef.current = service;
+            hasConnectedRef.current = true;
+
+            return () => {
+                if (webSocketServiceRef.current) {
+                    webSocketServiceRef.current.close();
+                }
+            };
+        }
+    }, []);
+
+    const enviarMensaje = async () => {
+        if (!inputMessage.trim()) {
+            alert("Por favor, introduce un mensaje válido.");
+            return;
+        }
+
+        setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
+
+        try {
+            // Envía el mensaje a través del WebSocket
+            if (webSocketServiceRef.current) {
+                webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });
+            }
+
+            // Envía el mensaje a través de la API REST como respaldo
+            const respuestaAPI = await enviarMensajeLaura(inputMessage);
+            if (respuestaAPI.resultados) {
+                setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (API)', mensaje: respuestaAPI.resultados[0].content }]);
+            }
+        } catch (error) {
+            console.error("Error al enviar mensaje:", error);
+            setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Sistema', mensaje: 'Error al enviar el mensaje. Por favor, intenta de nuevo.' }]);
+        }
+
+        setInputMessage('');
+    };
+
+    const renderMensaje = (msg) => {
+        // Intentar mostrar el contenido del mensaje basado en lo que llegue
+        return (
+            <p className="text-gray-800 dark:text-gray-100 mb-2">
+                <span className="font-bold">{msg.autor || "Desconocido"}:</span> {typeof msg.mensaje === 'object' ? JSON.stringify(msg.mensaje) : msg.mensaje}
+            </p>
+        );
+    };
+
+    return (
+        <div className="container mx-auto p-4 max-w-xl">
+            <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">
+                Chat con Laura
+            </h2>
+            <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded shadow-md mb-4 h-96 overflow-y-auto">
+                {mensajes.map((msg, index) => (
+                    <div key={index}>{renderMensaje(msg)}</div>
+                ))}
+            </div>
+            <div className="flex">
+                <input
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
+                    placeholder="Escribe tu mensaje aquí"
+                    className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-l bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition duration-200 focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+                <button
+                    onClick={enviarMensaje}
+                    className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-r transition duration-200"
+                >
+                    Enviar
+                </button>
+            </div>
+        </div>
+>>>>>>> 4fec0c9 (Ajustes para mejorar WebSocket y manejo de mensajes en LauraChatbot)
     );
     service.connectWithDelay(500);
     webSocketServiceRef.current = service;
