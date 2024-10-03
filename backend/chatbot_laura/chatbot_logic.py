@@ -74,23 +74,29 @@ def initialize_or_load_index(df):
     return index, embeddings
 
 def search(query, df, index, k=3):
-    query_embedding = np.array(get_embedding(query)).astype('float32')
-    query_embedding /= np.linalg.norm(query_embedding)
-    D, I = index.search(np.array([query_embedding]), k)
+    logger.info(f"Iniciando búsqueda para query: {query}")
+    try:
+        query_embedding = np.array(get_embedding(query)).astype('float32')
+        query_embedding /= np.linalg.norm(query_embedding)
+        D, I = index.search(np.array([query_embedding]), k)
     
-    results = []
-    for i in range(k):
-        result = df.iloc[I[0][i]]
-        results.append({
-            'content': result['full_content'],
-            'url': result['url'],
-            'type': result['type'],
-            'metadata': result['metadata'],
-            'similarity_score': float(D[0][i])
-        })
-    
-    return results
+        results = []
+        for i in range(k):
+            result = df.iloc[I[0][i]]
+            results.append({
+                'content': result['full_content'],
+                'url': result['url'],
+                'type': result['type'],
+                'metadata': result['metadata'],
+                'similarity_score': float(D[0][i])
+            })
+        logger.info(f"Búsqueda completada. Resultados: {results}")
+        return results
+    except Exception as e:
+        logger.error(f"Error durante la búsqueda: {e}")
+        return []
 
 # Initialize data and index
 df = process_data(json_file)
 index, embeddings = initialize_or_load_index(df)
+logger.info("Dataframe e índice inicializados")

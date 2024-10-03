@@ -14,16 +14,21 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
         logger.info(f"WebSocket desconectado para Laura Chatbot: {close_code}")
 
     async def receive(self, text_data):
+        logger.info(f"Datos recibidos en Laura Chatbot: {text_data}")
         try:
             text_data_json = json.loads(text_data)
+            logger.info(f"JSON parseado en Laura Chatbot: {text_data_json}")
             mensaje = text_data_json.get('message', '')
-            if not mensaje:
+            logger.info(f"Mensaje extraído en Laura Chatbot: '{mensaje}'")
+            
+            if not mensaje.strip():
                 await self.send(text_data=json.dumps({'error': 'El mensaje no puede estar vacío'}))
                 return
 
-            logger.info(f"Mensaje recibido para Laura Chatbot: {mensaje}")
+            logger.info(f"Mensaje válido recibido para Laura Chatbot: {mensaje}")
 
             resultados = search(mensaje, df, index)
+            logger.info(f"Resultados de búsqueda: {resultados}")
 
             await self.send(text_data=json.dumps({
                 'message': resultados

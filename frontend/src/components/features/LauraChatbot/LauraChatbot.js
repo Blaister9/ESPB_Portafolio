@@ -37,14 +37,16 @@ const LauraChatbot = () => {
             alert("Por favor, introduce un mensaje válido.");
             return;
         }
-
+    
         setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
-
+    
         try {
             if (webSocketServiceRef.current) {
+                console.log("Enviando mensaje a Laura WebSocket:", inputMessage);
                 webSocketServiceRef.current.sendMessage({ message: inputMessage });
             }
-
+    
+            console.log("Enviando mensaje a Laura API:", inputMessage);
             const respuestaAPI = await enviarMensajeLaura(inputMessage);
             console.log("Respuesta API Laura:", respuestaAPI);
             if (respuestaAPI.results) {
@@ -54,7 +56,7 @@ const LauraChatbot = () => {
             console.error("Error al enviar mensaje a Laura:", error);
             setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Sistema', mensaje: 'Error al enviar el mensaje a Laura. Por favor, intenta de nuevo.' }]);
         }
-
+    
         setInputMessage('');
     };
 
