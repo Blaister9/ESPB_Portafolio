@@ -1,4 +1,3 @@
-// /home/epaz/Documentos/2_Conversation/frontend/src/components/features/LauraChatbot/LauraChatbot.js
 import React, { useEffect, useState, useRef } from 'react';
 import createWebSocketService from '../../../services/websocket';
 import { enviarMensajeLaura } from '../../../services/api';
@@ -15,13 +14,7 @@ const LauraChatbot = () => {
                 console.log("Mensaje recibido desde WebSocket:", mensaje);
 
                 if (Array.isArray(mensaje.message)) {
-                    const formattedMessage = mensaje.message.map(item => ({
-                        content: item.content,
-                        type: item.type,
-                        url: item.url,
-                        similarity_score: item.similarity_score
-                    }));
-                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (WebSocket)', mensaje: formattedMessage }]);
+                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (WebSocket)', mensaje: mensaje.message }]);
                 } else {
                     setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Desconocido', mensaje: 'Formato inesperado de WebSocket' }]);
                 }
@@ -53,12 +46,8 @@ const LauraChatbot = () => {
             }
 
             const respuestaAPI = await enviarMensajeLaura(inputMessage);
-            console.log("Respuesta de la API:", respuestaAPI);  // Para depuración
             if (respuestaAPI.results) {
                 setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (API)', mensaje: respuestaAPI.results }]);
-            } else {
-                console.error("Respuesta de API inesperada:", respuestaAPI);
-                setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Sistema', mensaje: 'Respuesta inesperada del servidor.' }]);
             }
         } catch (error) {
             console.error("Error al enviar mensaje:", error);
