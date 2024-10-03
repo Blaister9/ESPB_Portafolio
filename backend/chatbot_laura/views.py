@@ -37,7 +37,7 @@ class ChatbotLauraView:
         try:
             # Usamos directamente la función de OpenAI para obtener embeddings
             response = client.embeddings.create(input=text, model=model)
-            return response['data'][0]['embedding']
+            return response.data[0].embedding
         except Exception as e:
             logger.error(f"Error al obtener embedding: {str(e)}")
             raise
