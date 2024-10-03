@@ -1,9 +1,8 @@
 # chatbot_laura/consumers.py
-# chatbot_laura/consumers.py
 import json
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .views import ChatbotLauraView
+from .chatbot_laura_logic import ChatbotLauraLogic
 
 logger = logging.getLogger(__name__)
 
@@ -22,24 +21,32 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             text_data_json = json.loads(text_data)
-            mensaje = text_data_json.get('mensaje', '')
             
+            mensaje = text_data_json.get('mensaje', '')
             if not mensaje:
                 await self.send(text_data=json.dumps({'error': 'El mensaje no puede estar vacío'}))
                 return
 
             logger.info(f"Mensaje recibido para Laura Chatbot: {mensaje}")
-
-            # Usar ChatbotLauraView para procesar el mensaje
-            chatbot_view = ChatbotLauraView()
-            resultados = await chatbot_view.search(mensaje)  # FAISS busca el mensaje
-
-            # Procesar los resultados a través de GPT-4
-            respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
-
-            # Enviar la respuesta de GPT-4 al cliente
+            
+            # Usar la lógica de ChatbotLauraLogic para procesar el mensaje
+            chatbot_logic = ChatbotLauraLogic()
+            resultados = await chatbot_logic.search(mensaje)
+            
+            # Procesar resultados para hacerlos más legibles
+            formatted_resultados = [
+                {
+                    'pregunta': res.get('pregunta', 'Sin pregunta'),
+                    'respuesta': res.get('respuesta', 'Sin respuesta'),
+                    'url': res.get('url', ''),
+                    'similarity_score': res.get('similarity_score', 0)
+                } 
+                for res in resultados
+            ]
+            
+            # Enviar respuesta
             await self.send(text_data=json.dumps({
-                'respuesta': respuesta_gpt4
+                'resultados': formatted_resultados
             }))
         except Exception as e:
             logger.error(f"Error en receive para Laura Chatbot: {e}")
