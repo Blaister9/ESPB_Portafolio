@@ -2,6 +2,9 @@ from django.http import JsonResponse
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from .chatbot_logic import search, df, index
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
