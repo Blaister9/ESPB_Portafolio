@@ -53,8 +53,12 @@ const LauraChatbot = () => {
             }
 
             const respuestaAPI = await enviarMensajeLaura(inputMessage);
+            console.log("Respuesta de la API:", respuestaAPI);  // Para depuración
             if (respuestaAPI.results) {
                 setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (API)', mensaje: respuestaAPI.results }]);
+            } else {
+                console.error("Respuesta de API inesperada:", respuestaAPI);
+                setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Sistema', mensaje: 'Respuesta inesperada del servidor.' }]);
             }
         } catch (error) {
             console.error("Error al enviar mensaje:", error);
