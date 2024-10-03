@@ -7,16 +7,16 @@ const LauraChatbot = () => {
     const [inputMessage, setInputMessage] = useState('');
     const webSocketServiceRef = useRef(null);
     const hasConnectedRef = useRef(false);
-
+    
     useEffect(() => {
         if (!hasConnectedRef.current) {
-            const service = createWebSocketService('wss://' + window.location.host + '/ws/chat/', (mensaje) => {
-                console.log("Mensaje recibido desde WebSocket:", mensaje);
+            const service = createWebSocketService('wss://' + window.location.host + '/ws/laura_chat/', (mensaje) => {
+                console.log("Mensaje recibido desde WebSocket Laura:", mensaje);
 
                 if (Array.isArray(mensaje.message)) {
                     setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (WebSocket)', mensaje: mensaje.message }]);
                 } else {
-                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Desconocido', mensaje: 'Formato inesperado de WebSocket' }]);
+                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura', mensaje: mensaje.message || 'Respuesta inesperada' }]);
                 }
             });
 
@@ -46,12 +46,13 @@ const LauraChatbot = () => {
             }
 
             const respuestaAPI = await enviarMensajeLaura(inputMessage);
+            console.log("Respuesta API Laura:", respuestaAPI);
             if (respuestaAPI.results) {
                 setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (API)', mensaje: respuestaAPI.results }]);
             }
         } catch (error) {
-            console.error("Error al enviar mensaje:", error);
-            setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Sistema', mensaje: 'Error al enviar el mensaje. Por favor, intenta de nuevo.' }]);
+            console.error("Error al enviar mensaje a Laura:", error);
+            setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Sistema', mensaje: 'Error al enviar el mensaje a Laura. Por favor, intenta de nuevo.' }]);
         }
 
         setInputMessage('');

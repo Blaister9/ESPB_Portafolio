@@ -23,24 +23,10 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
 
             logger.info(f"Mensaje recibido para Laura Chatbot: {mensaje}")
 
-            # Usar la función search de chatbot_logic.py
             resultados = search(mensaje, df, index)
 
-            # Formatear los resultados
-            formatted_resultados = [
-                {
-                    'pregunta': res['content'].get('pregunta', res['content'].get('titulo', 'Sin título')),
-                    'respuesta': res['content'].get('respuesta', res['content'].get('descripcion', 'Sin descripción')),
-                    'url': res.get('url', ''),
-                    'type': res.get('type', ''),
-                    'similarity_score': res.get('similarity_score', 0)
-                }
-                for res in resultados
-            ]
-
-            # Enviar respuesta
             await self.send(text_data=json.dumps({
-                'message': formatted_resultados
+                'message': resultados
             }))
         except Exception as e:
             logger.error(f"Error en receive para Laura Chatbot: {e}")
