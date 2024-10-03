@@ -47,8 +47,7 @@ class ChatbotLauraView:
             if os.path.exists(self.embedding_file) and os.path.exists(self.index_file):
                 logger.info("Cargando embeddings y FAISS index desde archivo...")
                 self.embeddings = self.load_embeddings(self.embedding_file)
-                self.index = faiss.read_index(self.index_file)
-                self.df = self.load_and_process_data(self.json_file)
+                self.index = faiss.read_index(self.index_file)                
             else:
                 logger.info("Generando nuevos embeddings y FAISS index...")
                 self.df = self.load_and_process_data(self.json_file)
@@ -117,8 +116,7 @@ class ChatbotLauraView:
             for i in range(k):
                 result = self.df.iloc[I[0][i]]
                 results.append({
-                    'pregunta': result['full_content'].get('pregunta', ''),
-                    'respuesta': result['full_content'].get('respuesta', ''),
+                    'content': result['full_content'],
                     'url': result['url'],
                     'type': result['type'],
                     'metadata': result['metadata'],
