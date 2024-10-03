@@ -1,26 +1,26 @@
 from django.http import JsonResponse
-from rest_framework.decorators import api_view
-from .chatbot_laura_logic import ChatbotLauraLogic
+   from channels.generic.websocket import AsyncWebsocketConsumer
+   import json
+   from .chatbot_logic import search, df, index
 
-# Inicializar el chatbot globalmente para que se cargue solo una vez
-chatbot_logic = ChatbotLauraLogic()
+   class ChatConsumer(AsyncWebsocketConsumer):
+       async def connect(self):
+           await self.accept()
 
-@api_view(['POST'])
-def chatbot_laura_view(request):
-    """
-    Vista para procesar las solicitudes del chatbot Laura.
-    """
-    try:
-        # Obtener el mensaje enviado por el usuario desde el cuerpo del POST
-        mensaje = request.data.get('mensaje', '')
-        if not mensaje:
-            return JsonResponse({'error': 'No se proporcionó el mensaje'}, status=400)
-        
-        # Realizar la búsqueda utilizando la lógica del chatbot
-        resultados = chatbot_logic.search(mensaje)
+       async def disconnect(self, close_code):
+           pass
 
-        # Devolver los resultados como una respuesta JSON
-        return JsonResponse({'resultados': resultados}, status=200)
-    
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+       async def receive(self, text_data):
+           text_data_json = json.loads(text_data)
+           query = text_data_json['message']
+
+           results = search(query, df, index)
+
+           await self.send(text_data=json.dumps({
+               'message': results
+           }))
+
+   def search_view(request):
+       query = request.GET.get('query', '')
+       results = search(query, df, index)
+       return JsonResponse({'results': results})

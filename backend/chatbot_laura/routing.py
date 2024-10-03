@@ -1,7 +1,9 @@
-# chatbot_laura/routing.py
-from django.urls import path
-from .consumers import LauraChatConsumer
+from channels.routing import ProtocolTypeRouter, URLRouter
+   from django.urls import path
+   from chatbot_laura.views import ChatConsumer
 
-websocket_urlpatterns = [
-    path('ws/laura-chat/', LauraChatConsumer.as_asgi()),
-]
+   application = ProtocolTypeRouter({
+       "websocket": URLRouter([
+           path("ws/chat/", ChatConsumer.as_asgi()),
+       ]),
+   })

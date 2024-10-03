@@ -1,3 +1,4 @@
+// /home/epaz/Documentos/2_Conversation/frontend/src/components/features/LauraChatbot/LauraChatbot.js
 import React, { useEffect, useState, useRef } from 'react';
 import createWebSocketService from '../../../services/websocket';
 import { enviarMensajeLaura } from '../../../services/api';
@@ -10,12 +11,17 @@ const LauraChatbot = () => {
 
     useEffect(() => {
         if (!hasConnectedRef.current) {
-            const service = createWebSocketService('wss://' + window.location.host + '/ws/laura-chat/', (mensaje) => {
-                console.log("Mensaje recibido desde WebSocket:", mensaje);  // Log para inspeccionar el mensaje recibido
+            const service = createWebSocketService('wss://' + window.location.host + '/ws/chat/', (mensaje) => {
+                console.log("Mensaje recibido desde WebSocket:", mensaje);
 
-                // Verifica si la respuesta tiene una estructura correcta
-                if (mensaje.resultados) {
-                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (WebSocket)', mensaje: mensaje.resultados }]);
+                if (Array.isArray(mensaje.message)) {
+                    const formattedMessage = mensaje.message.map(item => ({
+                        content: item.content,
+                        type: item.type,
+                        url: item.url,
+                        similarity_score: item.similarity_score
+                    }));
+                    setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (WebSocket)', mensaje: formattedMessage }]);
                 } else {
                     setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Desconocido', mensaje: 'Formato inesperado de WebSocket' }]);
                 }
@@ -42,15 +48,13 @@ const LauraChatbot = () => {
         setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Usuario', mensaje: inputMessage }]);
 
         try {
-            // Envía el mensaje a través del WebSocket
             if (webSocketServiceRef.current) {
-                webSocketServiceRef.current.sendMessage({ mensaje: inputMessage });
+                webSocketServiceRef.current.sendMessage({ message: inputMessage });
             }
 
-            // Envía el mensaje a través de la API REST como respaldo
             const respuestaAPI = await enviarMensajeLaura(inputMessage);
-            if (respuestaAPI.resultados) {
-                setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (API)', mensaje: respuestaAPI.resultados[0].content }]);
+            if (respuestaAPI.results) {
+                setMensajes((prevMensajes) => [...prevMensajes, { autor: 'Laura (API)', mensaje: respuestaAPI.results }]);
             }
         } catch (error) {
             console.error("Error al enviar mensaje:", error);
@@ -61,12 +65,27 @@ const LauraChatbot = () => {
     };
 
     const renderMensaje = (msg) => {
-        // Intentar mostrar el contenido del mensaje basado en lo que llegue
-        return (
-            <p className="text-gray-800 dark:text-gray-100 mb-2">
-                <span className="font-bold">{msg.autor || "Desconocido"}:</span> {typeof msg.mensaje === 'object' ? JSON.stringify(msg.mensaje) : msg.mensaje}
-            </p>
-        );
+        if (Array.isArray(msg.mensaje)) {
+            return (
+                <div>
+                    <p className="font-bold">{msg.autor}:</p>
+                    {msg.mensaje.map((item, index) => (
+                        <div key={index} className="ml-4 mb-2">
+                            <p>{item.content.pregunta || item.content.titulo}</p>
+                            <p>{item.content.respuesta || item.content.descripcion}</p>
+                            <p>Tipo: {item.type}, Similitud: {item.similarity_score.toFixed(2)}</p>
+                            {item.url && <a href={item.url} target="_blank" rel="noopener noreferrer">Más información</a>}
+                        </div>
+                    ))}
+                </div>
+            );
+        } else {
+            return (
+                <p className="text-gray-800 dark:text-gray-100 mb-2">
+                    <span className="font-bold">{msg.autor || "Desconocido"}:</span> {msg.mensaje}
+                </p>
+            );
+        }
     };
 
     return (

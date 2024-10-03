@@ -3,8 +3,8 @@ const BASE_URL = "https://santensor.com/api/";
 
 // Función para enviar mensajes al chatbot Laura
 export async function enviarMensajeLaura(mensaje) {
-    const response = await fetch(`${BASE_URL}chatbot-laura/`, {
-        method: "POST",
+    const response = await fetch(`${BASE_URL}chatbot-laura/search/`, {
+        method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
