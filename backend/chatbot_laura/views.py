@@ -131,7 +131,7 @@ class ChatbotLauraView:
 
 @api_view(['POST'])
 @csrf_exempt
-def chatbot_laura_view(request):
+async def chatbot_laura_view(request):
     try:
         data = json.loads(request.body)
         query = data.get('mensaje', '')
@@ -142,7 +142,7 @@ def chatbot_laura_view(request):
         resultados = chatbot_view.search(query)
 
         # Llamar a GPT-4
-        respuesta_gpt4 = generar_respuesta_gpt4(resultados)
+        respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
         return Response({'respuesta': respuesta_gpt4}, status=status.HTTP_200_OK)
 
     except json.JSONDecodeError:
