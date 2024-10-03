@@ -30,7 +30,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'conversaciones',
     'channels',
-    'proyectos'
+    'proyectos',
+    'chatbot_laura'
 ]
 
 ASGI_APPLICATION = 'mi_portafolio.asgi.application'

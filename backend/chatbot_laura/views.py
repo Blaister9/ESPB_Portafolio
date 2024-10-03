@@ -1,31 +1,26 @@
+from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
 from .chatbot_laura_logic import ChatbotLauraLogic
-import json
-import logging
 
-logger = logging.getLogger(__name__)
+# Inicializar el chatbot globalmente para que se cargue solo una vez
+chatbot_logic = ChatbotLauraLogic()
 
 @api_view(['POST'])
-async def chatbot_laura_view(request):
+def chatbot_laura_view(request):
+    """
+    Vista para procesar las solicitudes del chatbot Laura.
+    """
     try:
-        data = json.loads(request.body)
-        query = data.get('mensaje', '')
-        if not query:
-            return Response({'error': 'No se proporcionó el mensaje'}, status=status.HTTP_400_BAD_REQUEST)
-
-        chatbot_logic = ChatbotLauraLogic()
-        resultados = await chatbot_logic.search(query)
-
-        # Aquí se podría usar GPT-4 para refinar la respuesta
-        respuesta_gpt4 = await generar_respuesta_gpt4(resultados)
+        # Obtener el mensaje enviado por el usuario desde el cuerpo del POST
+        mensaje = request.data.get('mensaje', '')
+        if not mensaje:
+            return JsonResponse({'error': 'No se proporcionó el mensaje'}, status=400)
         
-        return Response({'respuesta': respuesta_gpt4}, status=status.HTTP_200_OK)
+        # Realizar la búsqueda utilizando la lógica del chatbot
+        resultados = chatbot_logic.search(mensaje)
 
-    except json.JSONDecodeError:
-        logger.error("Error decoding JSON")
-        return Response({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
+        # Devolver los resultados como una respuesta JSON
+        return JsonResponse({'resultados': resultados}, status=200)
+    
     except Exception as e:
-        logger.error(f"Error in post method: {str(e)}")
-        return Response({'error': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse({'error': str(e)}, status=500)

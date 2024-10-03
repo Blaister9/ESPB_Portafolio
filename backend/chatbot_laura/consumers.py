@@ -21,8 +21,8 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             text_data_json = json.loads(text_data)
-            
             mensaje = text_data_json.get('mensaje', '')
+
             if not mensaje:
                 await self.send(text_data=json.dumps({'error': 'El mensaje no puede estar vacío'}))
                 return
@@ -32,8 +32,8 @@ class LauraChatConsumer(AsyncWebsocketConsumer):
             # Usar la lógica de ChatbotLauraLogic para procesar el mensaje
             chatbot_logic = ChatbotLauraLogic()
             resultados = await chatbot_logic.search(mensaje)
-            
-            # Procesar resultados para hacerlos más legibles
+
+            # Formatear los resultados para hacerlos más legibles
             formatted_resultados = [
                 {
                     'pregunta': res.get('pregunta', 'Sin pregunta'),
