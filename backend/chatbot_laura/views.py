@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 import faiss
 import pickle
-import openai  # Importa OpenAI aquí
+from openai import OpenAI
 from dotenv import load_dotenv
 
 # Configurar logging
@@ -19,9 +19,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))  # Configura tu clave de API
 
-# Configura la API Key de OpenAI
-openai.api_key = os.getenv('OPENAI_API_KEY')
 
 class ChatbotLauraView:
     def __init__(self):
@@ -37,7 +36,7 @@ class ChatbotLauraView:
     def get_embedding(self, text, model="text-embedding-ada-002"):
         try:
             # Usamos directamente la función de OpenAI para obtener embeddings
-            response = openai.Embedding.create(input=text, model=model)
+            response = client.embeddings.create(input=text, model=model)
             return response['data'][0]['embedding']
         except Exception as e:
             logger.error(f"Error al obtener embedding: {str(e)}")
